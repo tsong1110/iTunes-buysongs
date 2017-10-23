@@ -1,0 +1,44 @@
+
+h1 {
+    color:white;
+    text-align: center;
+    margin-top: 100px;
+}
+
+h4 {
+    color: white;
+    padding: 10px;
+}
+.search {
+    background-color: black;
+    margin-bottom: 0;
+}
+#textarea1 {
+    color: white;
+}
+.parallax-container {
+    height: 350px;
+}
+
+img {
+    padding-right: 15px;
+}
+
+.price {
+    float: right;
+    font-size: 30px;
+}
+
+.collapsible {
+    margin: 0;
+}
+
+.collapsible-header:hover {
+    background-color: #f1f1f1;
+}
+
+.error{
+    padding-bottom: 20px;
+    text-align: center;
+}
+

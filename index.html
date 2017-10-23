@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>iTunes API Tutorial</title>
+    <link rel="shortcut icon" href="http://findicons.com/files/icons/2770/ios_7_icons/512/music.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+    <link rel="stylesheet" type="text/css" href="stylesheet_itunes.css">
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+</head>
+
+<body>
+
+    <div class="parallax-container">
+        <div class="parallax"><img src="https://wallpapertag.com/wallpaper/full/7/a/3/10913-amazing-music-background-2560x1600-smartphone.jpg"></div>
+        <h1>iTunes API Project</h1>
+    </div>
+
+    <div class="row search">
+        <form class="col s12">
+            <div class="row">
+                <h4>Buy songs by track</h4>
+                <div class="input-field col s12">
+                    <textarea id="textarea1" class="materialize-textarea"></textarea>
+                    <label for="textarea1">Enter Artist</label>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <ul id="songs" class="collapsible" data-collapsible="accordion">
+        <!-- <img src="loading_icon.gif"> -->
+    </ul>
+
+    <p> <a target="_blank" href="https://affiliate.itunes.apple.com/resources/documentation/itunes-store-web-service-search-api/#searchexamples">
+            Some Examples
+        </a>
+    </p>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+
+    <script>
+        // $(document).ready(... This is jQuery function that runs when the page is loaded.
+        // Do you want to load when the page is ready or when some button is clicked?
+        // Are you waiting for an input from the user???
+
+
+        $('form').keypress(function (e) {
+            if (e.which == 13) {
+                $('#songs').html("<img src='http://www.jordiros.me/glgifomatic/images/loading.gif'>");
+                var input = $('#textarea1').val()
+                searchItunes(input)
+                $('form')[0].reset()
+                // $('form').submit();
+                return false;    //<---- Add this line
+            }
+
+        });
+        function searchItunes(query) {
+            $.ajax({
+                url: "http://itunes.apple.com/search?term=" + query,
+                dataType: 'JSONP'
+            })
+                .done(function (data) {
+                    $('#songs').html("");
+                    console.log(data);
+                    var songs = [];
+                    if (data.results.length === 0) {
+                        $("#songs").html(`<div class="error">
+                                    <h2>No Results</h2>
+                                    <p> Please try another search! </p>
+                                </div>`)
+                    }
+                    // add code for when response from apple comes back.
+                    for (var i = 0; i < data.results.length; i++) {
+                        if (data.results[i].trackName) {
+                            // $('#songs').append("<li>" + data.results[i].trackName + " "+data.results[i].trackPrice+"</li>");
+                            $('#songs').append(`
+                            <li>
+                                <div class="collapsible-header">
+                                    <img src="${data.results[i].artworkUrl30}"> ${data.results[i].trackName}
+                                </div>
+                                <div class="collapsible-body">
+                                    <p>Some description on the song<span class="price">${data.results[i].trackPrice}</span></p>
+                                    <i class="fa fa-play amplitude-pause amplitude-play-pause sound" amplitude-song-index="${i}" aria-hidden="true"></i>
+                                </div>
+                            </li>     
+                        `)
+                            // $('#songs').append("<li>"++"</li>");
+                        }
+                        songs.push({
+                            "name": data.results[i].trackName,
+                            "artist": data.results[i].artistName,
+                            "album": data.results[i].collectionCensoredName,
+                            "url": data.results[i].previewUrl,
+                            "cover_art_url": data.results[i].artworkUrl100
+                        })
+                    }
+                    console.log(songs)
+                    Amplitude.init({
+                        "songs": songs
+                    })
+                    $('.collapsible').collapsible();
+                    initializeButtons()
+                })
+                .fail(function (data) {
+                    console.log(data);
+                    $('#songs').append(data.status);
+                    $('#songs').html(`
+                            <div class="error">
+                                <h2>Error! Status: ${data.status}</h2>
+                                <p>Please try again later!</p>
+                            </div>
+                            `)
+                })
+        }
+
+        $(document).ready(function () {
+            $('.collapsible').collapsible();
+            $('.parallax').parallax();
+        });
+        function initializeButtons() {
+            $('.fa-play').on('click', function () {
+                $(this).removeClass("fa-play");
+                $(this).addClass("fa-pause");
+            });
+            $('.fa-pause').on('click', function () {
+                $(this).removeClass("fa-pause");
+                $(this).addClass("fa-play");
+            });
+        }
+    </script>
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/amplitudejs@v3.2.0/dist/amplitude.js"></script>
+
+</body>
+
+</html>
