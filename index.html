@@ -64,7 +64,7 @@
         });
         function searchItunes(query) {
             $.ajax({
-                url: "http://itunes.apple.com/search?term=" + query,
+                url: "https://itunes.apple.com/search?term=" + query,
                 dataType: 'JSONP'
             })
                 .done(function (data) {
